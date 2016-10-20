@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage[colorlinks]{hyperref}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\lfoot{Copyright \copyright 2016 fortiss. All rights reserved.}
+\rfoot{Page \thepage}
+
+\newcommand{\mcSS}[1]{\multicolumn{4}{m{13cm}|}{#1}}
+\newcommand{\mcEE}[1]{\multicolumn{4}{m{13cm}|}{\color{red}\textbf{#1}}}
+
+\begin{document}
+
+\title{Review report}
+\maketitle
+
+\input{reps}
+
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

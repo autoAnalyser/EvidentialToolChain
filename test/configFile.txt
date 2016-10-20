@@ -1,0 +1,2 @@
+-sa "cppcheck infer coverity" -v "cbmc" -wp "frama-c"    
+-sa "cppcheck infer" -v "spin"  
