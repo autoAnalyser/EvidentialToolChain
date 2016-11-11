@@ -202,7 +202,7 @@ public class CodeReviewProcess {
         //System.out.print("\u001B[1mDONE:\u001B[0m");
         //System.out.println("review written to " + TempDirPath + "/report"+ configCount + ".pdf");
         System.out.println("\u001B[1m\u001B[34m==> review written to " + TempDirPath + "/report"+ configCount + ".pdf \u001B[0m");
-        Utils.runCMD0("cd " + TempDirPath + " && rm -rf " + ReportDirPath);
+        //Utils.runCMD0("cd " + TempDirPath + " && rm -rf " + ReportDirPath);
         
         
     }

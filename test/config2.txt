@@ -1,0 +1,1 @@
+-sa "infer coverity" -v "cbmc"

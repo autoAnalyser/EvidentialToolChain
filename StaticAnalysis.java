@@ -10,6 +10,7 @@ import etc.utils.*;
 
 public class StaticAnalysis {
 
+        /*
     public static void apply(String[] Tools, String FILEBASE, String FILEDIR, String TEMPDIR) {
         String MergedFile = TEMPDIR + "/merged.json";
         String RepSourceFile = TEMPDIR + "/Review/reps.tex";
@@ -43,7 +44,7 @@ public class StaticAnalysis {
         }
     }
     
-    /*
+
     public static JSONArray apply(String[] Tools, String SourceFilePath) {
         File SourceFile = new File(SourceFilePath);
         JSONArray AllErrors = new JSONArray();

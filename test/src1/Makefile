@@ -9,4 +9,4 @@ all: $(OBJECTS)
 	${CC} -c $<
 
 clean:
-	rm -rf $(OBJECTS) *.xml infer-out
+	rm -rf $(OBJECTS) *.xml *.o infer-out

@@ -4,14 +4,23 @@
 \usepackage[colorlinks]{hyperref}
 \usepackage{longtable}
 \usepackage{fancyhdr}
- 
-\pagestyle{fancy}
-\fancyhf{}
-\lfoot{Copyright \copyright 2016 fortiss. All rights reserved.}
-\rfoot{Page \thepage}
+\usepackage[usenames, dvipsnames]{color}
 
-\newcommand{\mcSS}[1]{\multicolumn{4}{m{13cm}|}{#1}}
-\newcommand{\mcEE}[1]{\multicolumn{4}{m{13cm}|}{\color{red}\textbf{#1}}}
+\pagestyle{fancy}
+%\fancyhf{}
+% \fancyhead[L]{}
+% \fancyhead[C]{}
+% \fancyhead[R]{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[L]{Copyright \copyright 2016 fortiss. All rights reserved.}
+\fancyfoot[C]{}
+\fancyfoot[R]{Page \thepage}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\mcNN}[1]{\multicolumn{3}{m{13cm}|}{#1}}
+\newcommand{\mcRR}[1]{\multicolumn{3}{m{13cm}|}{\color{red}\textbf{#1}}}
+\newcommand{\mcBB}[1]{\multicolumn{3}{m{13cm}|}{\color{blue}\textbf{#1}}}
+\newcommand{\mcTODO}[1]{\multicolumn{3}{m{13cm}|}{\color{BurntOrange}\textbf{#1}}}
 
 \begin{document}
 

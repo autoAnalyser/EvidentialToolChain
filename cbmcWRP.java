@@ -7,55 +7,75 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import java.io.*;
 
+import org.apache.commons.io.FileUtils;
+
 import etc.utils.Utils;
 
 public class cbmcWRP {
     
     public static String[] getProcedures(String File, String TEMPDIR){
-        String ProcList0 = Utils.runCMD1("echo $(cd " + TEMPDIR + " && gcc -c " + File + " -o temp.o && nm temp.o | awk '$2 == \"T\" {print $3}')");
-        System.out.println("ProcList0 : " + ProcList0);
+        
+        File SourceFileObj = new File(File);
+        String SourceFileBase = SourceFileObj.getName();
+        String SourceDirPath = SourceFileObj.getParent();
+        
+        //String ProcList0 = Utils.runCMD1("echo $(cd " + TEMPDIR + " && gcc -c " + File + " -o temp.o && nm temp.o | awk '$2 == \"T\" {print $3}')");
+        String ProcList0 = Utils.runCMD1("echo $(cd " + SourceDirPath + " && gcc -c " + SourceFileBase + " -o temp.o && nm temp.o | awk '$2 == \"T\" {print $3}')");
+        //System.out.println("ProcList0 : " + ProcList0);
+
+        //System.out.println("ProcList0 : 02");
 
         String[] ProcList = (ProcList0.replace("\n","")).split(" ");
         for (int i=0; i<ProcList.length; i++){
-            System.out.println("ProcList [" + i + "] : " + ProcList[i]);
+            //System.out.println("ProcList [" + i + "] : " + ProcList[i].substring(1));
             ProcList[i] = ProcList[i].substring(1);
         }
         return ProcList;
     }
     
     public static boolean cbmcCheck(String SourceFile, String TEMPDIR, String assertion, Long line, String annotID, String procedure){
-        String annotPath = TEMPDIR + "/annotProg" + annotID + ".c";
-        Utils.annotateFile(SourceFile, assertion, line, annotPath);
-        String cbmcOUT = Utils.runCMD1("echo $(timeout 1 cbmc --function " + procedure + " " + annotPath + ") | grep -q 'VERIFICATION FAILED' && echo $?");
-        cbmcOUT = (cbmcOUT.replace("\n","")).replace(" ","");
+        File SourceFileObj = new File(SourceFile);
+        String SourceFileBase = SourceFileObj.getName();
+        String SourceDirPath = SourceFileObj.getParent();
+        File SourceDir = new File(SourceDirPath);
         
-        Utils.runCMD0("rm -rf " + annotPath);
+        String AnnotDirPath = TEMPDIR + "/AnnotDir" + annotID;
+        File AnnotDir = new File(AnnotDirPath);
+        
+        try{
+            FileUtils.copyDirectory(SourceDir, AnnotDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        Utils.runCMD0("cd " + AnnotDirPath + " && make clean && rm Makefile "+ SourceFileBase);
+        
+        String annotProgPath = AnnotDirPath + "/" + SourceFileBase;
+        Utils.annotateFile(SourceFile, assertion, line, annotProgPath);
+        String cbmcOUT = Utils.runCMD1("echo $(timeout 1 cbmc --function " + procedure + " " + annotProgPath + ") | grep -q 'VERIFICATION FAILED' && echo $?");
+        cbmcOUT = (cbmcOUT.replace("\n","")).replace(" ","");
         
         return cbmcOUT.equals("0");
     }
     
     public static void cbmcRefine(String SourceFile, String TEMPDIR, String assertion, Long line, int i, JSONObject Error){
-        boolean realError = false;
         String[] ProcList = getProcedures(SourceFile, TEMPDIR);
         for (int j = 0; j < ProcList.length; j++){
             String annotID = "" + (i+1) + (j+1);
             if (cbmcCheck(SourceFile, TEMPDIR, assertion, line, annotID, ProcList[j])){
-                realError = true;
                 Error.put("severity", "Verified as real error [multi-proc]");
                 Error.put("status", 0);
-                break;
+                break; //TODO: More precise analysis
             }
         }
-        if (realError == false){
-            Error.put("severity", "Verified as false alarm [multi-proc]");
-            Error.put("status", 1);
-        }
+        Error.put("severity", "Verified as false alarm [multi-proc]");
+        Error.put("status", 1);
     }
     
     public static void cbmcRefine(String SourceFile, String TEMPDIR, String assertion, Long line, int i, String procedure, JSONObject Error){
         String annotID = "" + (i+1);
         if (cbmcCheck(SourceFile, TEMPDIR, assertion, line, annotID, procedure)){
-            Error.put("severity", "Verified as real error [multi-proc]");
+            Error.put("severity", "Verified as real error [def-proc]");
             Error.put("status", 0);
         }
         else {
@@ -63,49 +83,8 @@ public class cbmcWRP {
             Error.put("status", 1);
         }
     }
-
-    public static void apply(String SourceFile, String TEMPDIR, String ErrorsFile, String RefErrorsFile){ // (SourceFile, TEMPDIR, ErrorsFile, RefErrorsFile)
-        JSONParser parser = new JSONParser();
-        try {
-            Object ErrorsObj = parser.parse(new FileReader(ErrorsFile));
-            JSONArray Errors = (JSONArray) ErrorsObj;
-            JSONArray RefErrors = new JSONArray();
-            Iterator<JSONObject> iterator = Errors.iterator();
-            for (int i = 0 ; iterator.hasNext() ; ++i ){
-                JSONObject Error = iterator.next();
-                String type = (String) Error.get("type");
-                Long line = (Long) Error.get("line");
-                String procedure = (String) Error.get("procedure");
-                if (type.equals("NULL DEREFERENCE")){
-                    String nullVar = (String) Error.get("variable");
-                    String assertion = "assert(" + nullVar + "!= NULL);";
-                    if (procedure.equals(" ")) {
-                        cbmcRefine(SourceFile, TEMPDIR, assertion, line, i, Error);
-                    }
-                    else {
-                        cbmcRefine(SourceFile, TEMPDIR, assertion, line, i, procedure, Error);
-                    }
-                }
-                else {
-                    Error.put("severity", "[TODO] for " + type);
-                    Error.put("status", 2);
-                }
-                RefErrors.add(Error);
-            }
-            FileWriter fw = new FileWriter(RefErrorsFile);
-            fw.write(RefErrors.toJSONString());
-            fw.flush();
-            fw.close();
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-
+    
     public static JSONArray apply(JSONArray Errors, String SourceFile, String TEMPDIR){
-        //JSONArray Errors = (JSONArray) ErrorsObj;
         JSONArray RefErrors = new JSONArray();
         Iterator<JSONObject> iterator = Errors.iterator();
         for (int i = 0 ; iterator.hasNext() ; ++i ){
@@ -113,6 +92,10 @@ public class cbmcWRP {
             String type = (String) Error.get("type");
             Long line = (Long) Error.get("line");
             String procedure = (String) Error.get("procedure");
+            
+            //System.out.println("Error : " + Error.toJSONString());
+            //System.out.println("procedure : " + procedure);
+
             if (type.equals("NULL DEREFERENCE")){
                 String nullVar = (String) Error.get("variable");
                 String assertion = "assert(" + nullVar + "!= NULL);";
@@ -131,5 +114,5 @@ public class cbmcWRP {
         }
         return RefErrors;
     }
-
+    
 }

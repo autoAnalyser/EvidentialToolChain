@@ -16,7 +16,7 @@ import etc.utils.Utils;
 
 public class cppcheckWRP {
     
-    public static String filterErrorType(String Type) throws IOException {
+    public static String filterErrorType0(String Type) throws IOException {
         switch (Type) {
             case "nullPointer":  return "NULL DEREFERENCE";
             case "RESOURCE_LEAK":  return "RESOURCE LEAK";
@@ -24,13 +24,25 @@ public class cppcheckWRP {
             case "unreadVariable":  return "Unread Variable";
             case "unusedFunction":  return "Unused Function";
             case "missingIncludeSystem":  return "Missing Include System";
-           
-	    case "missingInclude":  return "Missing Include";
- 	   default:
-                System.out.println("ERROR: Unknown case for CppCheck wrapper!"+Type);
+            case "missingInclude":  return "Missing Include";
+            default:
+                System.out.println("ERROR: Unknown case for cppcheck wrapper: " + Type);
                 System.exit(0);
         }
         return "";
+    }
+    
+    public static String filterErrorType(String Type) throws IOException {
+        switch (Type) {
+            case "nullPointer":
+                return "NULL DEREFERENCE";
+            case "RESOURCE_LEAK":
+                return "RESOURCE LEAK";
+            case "memleak":
+                return "MEMORY LEAK";
+            default:
+                return "OTHER";
+        }
     }
     
     public static void apply(String FILEBASE, String FILEDIR, String TEMPDIR){
@@ -148,10 +160,6 @@ public class cppcheckWRP {
                 }
                 PartErrors.add(PartError);
             }
-            
-            //CppCheckErrorsObj.put("tool", "cppcheck");
-            //CppCheckErrorsObj.put("errors", PartErrors);
-            //System.out.println("*** CppCheck *** " + CppCheckErrorsObj.toJSONString());
             
         } catch (FileNotFoundException e) {
             e.printStackTrace();
