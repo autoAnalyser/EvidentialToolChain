@@ -1,1 +1,1 @@
--sa "infer coverity" -v "cbmc"
+-sa "infer cppcheck coverity" -v "spin"

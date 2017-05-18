@@ -132,7 +132,7 @@ public class inferWRP {
             e.printStackTrace();
         }
         
-        //Utils.runCMD0("cd " + FILEDIR + " && make clean");
+        Utils.runCMD0("cd " + FILEDIR + " && make clean");
         return PartErrors;
     }
 

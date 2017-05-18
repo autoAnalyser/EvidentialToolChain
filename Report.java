@@ -130,7 +130,9 @@ public class Report {
                 else if (status == 1)
                     ErrorEntry2 = ErrorEntry2 + "\n \\cline{2-4} \n & \\mcRR{ FALSE ALARM ***} \\\\ ";
                 else
-                    ErrorEntry2 = ErrorEntry2 + "\n \\cline{2-4} \n & \\mcTODO{" + severity + "} \\\\ ";
+                    //ErrorEntry2 = ErrorEntry2 + "\n \\cline{2-4} \n & \\mcTODO{" + severity + "} \\\\ ";
+                    //ErrorEntry2 = ErrorEntry2 + "\n \\cline{2-4} \n & \\mcTODO{ NOT REFINED } \\\\ ";
+                    ErrorEntry2 = ErrorEntry2 + "\n \\cline{2-4} \n & \\mcBB{ ERROR VERIFIED } \\\\ ";
             }
             else {
                 

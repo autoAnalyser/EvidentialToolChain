@@ -1,1 +1,1 @@
-{"workflows":["SCRUB","CodeReview"],"tools":["infer","cppcheck","cbmc","frama-c"]}
+{"workflows":["CodeReview"],"tools":["cbmc","frama-c","infer","cppcheck"]}

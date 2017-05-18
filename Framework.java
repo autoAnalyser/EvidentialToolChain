@@ -24,15 +24,12 @@ public class Framework {
     String BaseDir;
     String ParamsFile;
     
-    
     public Framework(String Dir) {
         BaseDir = Dir;
         ParamsFile = BaseDir + "/params.json";
-        
-        JSONParser parser = new JSONParser();
-        Object Obj = "";
         JSONObject JsonObj = new JSONObject();
         try {
+            JSONParser parser = new JSONParser();
             JsonObj = (JSONObject) parser.parse(new FileReader(ParamsFile));
             
         } catch (FileNotFoundException e) {
@@ -51,8 +48,6 @@ public class Framework {
         for (int i=0; i < AllTools.size(); i++) {
             Tools.add(AllTools.get(i).toString());
         }
-        //System.out.println("Framework instantiation done.");
-        
     }
     
     public String getBaseDir(){

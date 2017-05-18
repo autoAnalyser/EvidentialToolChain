@@ -107,18 +107,14 @@ public class engine {
                 System.out.println("============================== ");
                 System.out.println("\u001B[1m Engine starting CONFIG : " + configCount + "\u001B[0m");
                 System.out.println("============================== ");
-                //System.out.println("scan.nextLine() : " + scan.nextLine());
-                
                 CodeReviewProcess p1 = new CodeReviewProcess(SourceFile, scan.nextLine(), configCount, TempDirPath);
                 p1.run();
-
                 configCount++;
             }
         }
         else {
             System.out.println("UNDEFINED workflow : " + WorkFlow);
         }
-
     }
     
     public void run() {
@@ -141,21 +137,16 @@ public class engine {
         TempDirPath = System.getProperty("user.dir") + "/TEMP";
         File TempDir = new File(TempDirPath);
         if (TempDir.exists()) {
-            //Utils.delete(TempDir);
             try{
                 FileUtils.deleteDirectory(TempDir);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //System.out.println("TEMP Directory deleted");
         }
         if (!TempDir.mkdir()) {
             System.out.println("ERROR: Can not creat directory: " + TempDirPath);
             System.exit(0);
         }
-        
-        //System.out.println("TEMP directory created");
-        
     }
     
     public static void main(String args[]){
